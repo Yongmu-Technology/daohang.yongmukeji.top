@@ -1,0 +1,221 @@
+<!DOCTYPE html> 
+<html lang="zh-CN"> 
+<head> 
+ <meta charset="UTF-8"> 
+ <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+ <title>服务备案查询平台-首页</title> 
+ <link rel="icon" href="https://hive.forms.usercontent.microsoft/Images/9188040d-6c67-4c5b-b112-36a304b66dad/00000000-0000-0000-0003-bffd409131bf/T0RRH45M4BJGVXSCOEE2GS5JAZ/386e9d40-41d5-440e-acdb-b375215b7188" type="image/png"> 
+ 
+ <style> 
+ body { 
+ font-family: 'Microsoft YaHei', Arial, sans-serif; 
+ background-color: #000; 
+ color: #fff; 
+ margin: 0; 
+ padding: 20px; 
+ display: flex; 
+ flex-direction: column; 
+ align-items: center; 
+ min-height: 100vh; 
+ box-sizing: border-box; 
+ } 
+ 
+ .container { 
+ max-width: 800px; 
+ width: 100%; 
+ display: flex; 
+ flex-direction: column; 
+ align-items: center; 
+ text-align: center; 
+ } 
+ 
+ .header { 
+ margin-bottom: 30px; 
+ width: 100%; 
+ } 
+ 
+ .warning-box { 
+ background-color: #330000; 
+ border: 1px solid #ff3333; 
+ border-radius: 8px; 
+ padding: 15px; 
+ margin-bottom: 30px; 
+ color: #ffcccc; 
+ font-size: 16px; 
+ line-height: 1.5; 
+ } 
+ 
+ .platform-link { 
+ color: #4da6ff; 
+ text-decoration: none; 
+ font-weight: bold; 
+ } 
+ 
+ .platform-link:hover { 
+ text-decoration: underline; 
+ } 
+ 
+ .content { 
+ background-color: #1a1a1a; 
+ border-radius: 10px; 
+ padding: 30px; 
+ width: 90%; 
+ max-width: 600px; 
+ margin: 20px 0; 
+ display: flex; 
+ justify-content: center; 
+ align-items: center; 
+ gap: 20px; 
+ } 
+ 
+ .scan-button { 
+ background-color: #07C160; /* 微信绿色 */ 
+ color: white; 
+ border: none; 
+ padding: 12px 30px; 
+ font-size: 18px; 
+ border-radius: 5px; 
+ cursor: pointer; 
+ transition: background-color 0.3s; 
+ } 
+ 
+ .scan-button:hover { 
+ background-color: #06AD56; 
+ } 
+ 
+ .exit-button { 
+ background-color: #990000; 
+ color: white; 
+ border: none; 
+ padding: 12px 30px; 
+ font-size: 18px; 
+ border-radius: 5px; 
+ cursor: pointer; 
+ transition: background-color 0.3s; 
+ } 
+ 
+ .exit-button:hover { 
+ background-color: #cc0000; 
+ } 
+ 
+ .footer { 
+ margin-top: auto; 
+ text-align: center; 
+ font-size: 12px; 
+ color: #999; 
+ margin-top: 30px; 
+ } 
+ 
+ .footer a { 
+ color: #999; 
+ text-decoration: none; 
+ } 
+ 
+ .footer a:hover { 
+ color: #fff; 
+ text-decoration: underline; 
+ } 
+ 
+ @media (max-width: 600px) { 
+ .warning-box { 
+ font-size: 14px; 
+ padding: 10px; 
+ } 
+ 
+ .content { 
+ padding: 20px; 
+ flex-direction: column; 
+ gap: 15px; 
+ } 
+ 
+ .scan-button, .exit-button { 
+ padding: 10px 25px; 
+ font-size: 16px; 
+ } 
+ } 
+ </style> 
+</head> 
+<body> 
+ <div class="container"> 
+ <div class="header"> 
+ <h1>永慕智创软件工作室（永慕科技）服务备案查询平台</h1> 
+ </div> 
+ 
+ <div class="warning-box"> 
+ <p>⚠️ 该平台无法直接使用，请通过微信扫一扫或相关链接跳转后访问本平台并查看相关服务的备案信息！</p> 
+ </div> 
+ 
+ <div class="content"> 
+ <button class="scan-button" id="scanButton">使用微信扫一扫</button> 
+ <button class="exit-button" id="exitButton">退出页面</button> 
+ </div> 
+ 
+ <div class="footer"> 
+ <p>© 2025-present 永慕智创软件工作室（永慕科技） 版权所有</p> 
+ <p><a href="https://yongmukeji.top" target="_blank">永慕智创软件工作室（永慕科技)官网</a></p> 
+<p><a href="https://daohang.yongmukeji.top" target="_blank">永慕智创软件工作室网站地图</a></p> 
+ </div> 
+ </div> 
+ 
+ <!-- 引入微信JS-SDK -->
+ <script src="https://res2.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
+ 
+ <script> 
+ document.getElementById('scanButton').addEventListener('click', function() {
+    // 检查是否在微信环境中
+    if (typeof WeixinJSBridge === 'undefined' && typeof wx === 'undefined') {
+        alert('请在微信中打开此网页以使用扫一扫功能');
+        return;
+    }
+
+    // 设置3秒后检查的定时器
+    var scanCheckTimer = setTimeout(function() {
+        if (!window.scanSuccess) { // 假设scanSuccess是一个全局标志，表示扫一扫是否成功打开
+            alert('您好像未成功打开扫一扫功能，请确保已在微信中打开此网页，然后重试。');
+        }
+    }, 3000);
+
+    // 尝试调用微信扫一扫
+    try {
+        if (typeof wx !== 'undefined' && wx.scanQRCode) {
+            window.scanSuccess = false; // 设置标志为false
+            wx.scanQRCode({
+                needResult: 0, // 默认为0，扫描结果由微信处理
+                scanType: ["qrCode", "barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+                success: function (res) {
+                    window.scanSuccess = true; // 扫一扫成功，设置标志为true
+                    clearTimeout(scanCheckTimer); // 清除定时器
+                    // 这里可以处理扫描成功后的逻辑，比如跳转到某个页面
+                },
+                fail: function (res) {
+                    window.scanSuccess = false; // 扫一扫失败，标志保持为false（其实可以省略，因为默认就是false）
+                    clearTimeout(scanCheckTimer); // 清除定时器，避免不必要的提示
+                    alert('扫一扫失败，请重试。');
+                }
+            });
+        } else {
+            // 如果wx对象不存在或没有scanQRCode方法，则直接提示
+            alert('微信扫一扫功能不可用，请确保已在微信中打开此网页。');
+        }
+    } catch (e) {
+        clearTimeout(scanCheckTimer); // 清除定时器，避免在出错时也弹出提示
+        alert('调用扫一扫时出错：' + e.message);
+    }
+});
+
+// 退出页面功能 
+document.getElementById('exitButton').addEventListener('click', function() { 
+    // 尝试关闭窗口 
+    window.close(); 
+ 
+    // 设置3秒后检查是否关闭成功 
+    setTimeout(function() { 
+        // 如果窗口仍然打开（说明关闭失败） 
+        if (!window.closed) { 
+            alert('您好像没有成功关闭本页面，请查看页面顶部是否有关闭按钮。如有，请点击以退出；也可通过关闭访问网页的应用程序关闭本网页！'); 
+        } 
+    }, 3000); 
+}); 
+ </script> 
+</body> 
+</html>
